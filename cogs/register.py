@@ -9,26 +9,26 @@ from typing import Optional
 class RegisterModal(discord.ui.Modal):
     """Modal for player registration."""
     def __init__(self, modality: str):
-        super().__init__(title=f"Registro - {modality}", timeout=300)
+        super().__init__(title=f"Registration - {modality}", timeout=300)
         self.modality = modality
 
     gamertag = discord.ui.TextInput(
         label="Gamertag (Xbox/Bedrock)",
-        placeholder="Tu nombre de usuario de Minecraft Bedrock",
+        placeholder="Your Minecraft Bedrock username",
         required=True,
         max_length=50
     )
 
     region = discord.ui.TextInput(
-        label="Región",
-        placeholder="NA, SA, o EU",
+        label="Region",
+        placeholder="NA, SA, or EU",
         required=True,
         max_length=10
     )
 
     platform = discord.ui.TextInput(
-        label="Plataforma",
-        placeholder="Mobile, Windows, o Console",
+        label="Platform",
+        placeholder="Mobile, Windows, or Console",
         required=True,
         max_length=20
     )
@@ -39,8 +39,8 @@ class RegisterModal(discord.ui.Modal):
         if region_upper not in config.REGIONS:
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="Región Inválida",
-                    description=f"Las regiones válidas son: {', '.join(config.REGIONS)}",
+                    title="Invalid Region",
+                    description=f"Valid regions are: {', '.join(config.REGIONS)}",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -51,8 +51,8 @@ class RegisterModal(discord.ui.Modal):
         if platform_title not in config.PLATFORMS:
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="Plataforma Inválida",
-                    description=f"Las plataformas válidas son: {', '.join(config.PLATFORMS)}",
+                    title="Invalid Platform",
+                    description=f"Valid platforms are: {', '.join(config.PLATFORMS)}",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -77,8 +77,8 @@ class RegisterModal(discord.ui.Modal):
                     if logs_channel:
                         await logs_channel.send(
                             embed=discord.Embed(
-                                title="Nuevo Registro",
-                                description=f"**Usuario:** {interaction.user.mention}\n"f"**Gamertag:** {self.gamertag.value}\n"f"**Región:** {region_upper}\n"f"**Plataforma:** {platform_title}\n"f"**Modalidad:** {self.modality}",
+                                title="New Registration",
+                                description=f"**User:** {interaction.user.mention}\n"f"**Gamertag:** {self.gamertag.value}\n"f"**Region:** {region_upper}\n"f"**Platform:** {platform_title}\n"f"**Game mode:** {self.modality}",
                                 color=config.COLORS["success"],
                                 timestamp=datetime.now()
                             )
@@ -88,8 +88,8 @@ class RegisterModal(discord.ui.Modal):
 
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="Registro Exitoso",
-                    description=f"Te has registrado en **{self.modality}**!\n\n"f"**Gamertag:** {self.gamertag.value}\n"f"**Región:** {region_upper}\n"f"**Plataforma:** {platform_title}\n\n"f"Ahora puedes unirte a la cola de pruebas.",
+                    title="Registration Successful",
+                    description=f"You have registered for **{self.modality}**!\n\n"f"**Gamertag:** {self.gamertag.value}\n"f"**Region:** {region_upper}\n"f"**Platform:** {platform_title}\n\n"f"You can now join the testing queue.",
                     color=config.COLORS["success"]
                 ),
                 ephemeral=True
@@ -100,7 +100,7 @@ class RegisterModal(discord.ui.Modal):
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Error",
-                    description=f"No se pudo completar el registro: {str(e)}",
+                    description=f"Registration could not be completed: {str(e)}",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -160,28 +160,28 @@ class Register(commands.Cog):
         """Register persistent views on cog load."""
         self.bot.add_view(PersistentRegisterView())
 
-    @app_commands.command(name="registerpanel", description="Muestra el panel de registro")
+    @app_commands.command(name="registerpanel", description="Display the registration panel")
     async def register_panel(self, interaction: discord.Interaction):
         """Show registration panel."""
         embed = discord.Embed(
-            title="Registro de Jugadores",
-            description="**Minecraft Bedrock Testing System**\n\n" "Selecciona una modalidad para registrarte.\n" "Podrás registrarte en múltiples modalidades.\n\n" "**Regiones disponibles:** NA, SA, EU\n" "**Plataformas:** Mobile, Windows, Console",
+            title="Player Registration",
+            description="**Minecraft Bedrock Testing System**\n\n" "Select a game mode to register.\n" "You can register for multiple game modes.\n\n" "**Available regions:** NA, SA, EU\n" "**Platforms:** Mobile, Windows, Console",
             color=config.COLORS["bedrock"]
         )
 
         embed.add_field(
             name="CrystalPvP",
-            value="Combate con cristales del End",
+            value="End Crystal combat",
             inline=True
         )
         embed.add_field(
             name="NethPot PvP",
-            value="Combate con pociones",
+            value="Potion combat",
             inline=True
         )
         embed.add_field(
             name="Sword",
-            value="Combate con espadas",
+            value="Sword combat",
             inline=True
         )
         embed.add_field(
@@ -190,23 +190,23 @@ class Register(commands.Cog):
             inline=True
         )
 
-        embed.set_footer(text="Haz clic en el botón de la modalidad para registrarte")
+        embed.set_footer(text="Click a game-mode button to register")
 
         await interaction.response.send_message(
             embed=embed,
             view=PersistentRegisterView()
         )
 
-    @app_commands.command(name="register", description="Registrarse para una modalidad específica")
-    @app_commands.describe(modalidad="La modalidad en la que quieres registrarte")
-    @app_commands.choices(modalidad=[
+    @app_commands.command(name="register", description="Register for a specific game mode")
+    @app_commands.describe(game_mode="Game mode you want to register for")
+    @app_commands.choices(game_mode=[
         app_commands.Choice(name=mod, value=mod) for mod in config.DEFAULT_MODALITIES
     ])
-    async def register(self, interaction: discord.Interaction, modalidad: app_commands.Choice[str]):
+    async def register(self, interaction: discord.Interaction, game_mode: app_commands.Choice[str]):
         """Direct registration command."""
-        await interaction.response.send_modal(RegisterModal(modalidad.value))
+        await interaction.response.send_modal(RegisterModal(game_mode.value))
 
-    @app_commands.command(name="myregistrations", description="Ver tus registros actuales")
+    @app_commands.command(name="myregistrations", description="View your current registrations")
     async def my_registrations(self, interaction: discord.Interaction):
         """View user's registrations."""
         registrations = []
@@ -218,8 +218,8 @@ class Register(commands.Cog):
         if not registrations:
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="ℹ Sin Registros",
-                    description="No estás registrado en ninguna modalidad.\n" "Usa `/register` o el panel de registro.",
+                    title="ℹ No Registrations",
+                    description="You are not registered for any game mode.\n" "Use `/register` or the registration panel.",
                     color=config.COLORS["info"]
                 ),
                 ephemeral=True
@@ -227,7 +227,7 @@ class Register(commands.Cog):
             return
 
         embed = discord.Embed(
-            title="Tus Registros",
+            title="Your Registrations",
             description="Minecraft Bedrock",
             color=config.COLORS["bedrock"]
         )
@@ -235,25 +235,25 @@ class Register(commands.Cog):
         for reg in registrations:
             embed.add_field(
                 name=reg["modalidad"],
-                value=f"**Gamertag:** {reg['gamertag']}\n"f"**Región:** {reg['region']}\n"f"**Plataforma:** {reg['platform']}",
+                value=f"**Gamertag:** {reg['gamertag']}\n"f"**Region:** {reg['region']}\n"f"**Platform:** {reg['platform']}",
                 inline=False
             )
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @app_commands.command(name="unregister", description="Eliminar tu registro de una modalidad")
-    @app_commands.describe(modalidad="La modalidad de la que quieres salir")
-    @app_commands.choices(modalidad=[
+    @app_commands.command(name="unregister", description="Remove your registration from a game mode")
+    @app_commands.describe(game_mode="Game mode you want to leave")
+    @app_commands.choices(game_mode=[
         app_commands.Choice(name=mod, value=mod) for mod in config.DEFAULT_MODALITIES
     ])
-    async def unregister(self, interaction: discord.Interaction, modalidad: app_commands.Choice[str]):
+    async def unregister(self, interaction: discord.Interaction, game_mode: app_commands.Choice[str]):
         """Remove registration."""
-        reg = database.get_player_registration(interaction.guild_id, interaction.user.id, modalidad.value)
+        reg = database.get_player_registration(interaction.guild_id, interaction.user.id, game_mode.value)
         if not reg:
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="ℹ No Registrado",
-                    description=f"No estás registrado en **{modalidad.value}**.",
+                    title="ℹ Not Registered",
+                    description=f"You are not registered for **{game_mode.value}**.",
                     color=config.COLORS["info"]
                 ),
                 ephemeral=True
@@ -266,14 +266,14 @@ class Register(commands.Cog):
             cursor = conn.cursor()
             cursor.execute("""DELETE FROM player_registers
                 WHERE guild_id = ? AND discord_id = ? AND modalidad = ?
-            """, (interaction.guild_id, interaction.user.id, modalidad.value))
+            """, (interaction.guild_id, interaction.user.id, game_mode.value))
             conn.commit()
             conn.close()
 
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="Registro Eliminado",
-                    description=f"Has sido eliminado de **{modalidad.value}**.",
+                    title="Registration Removed",
+                    description=f"Your registration for **{game_mode.value}** has been removed.",
                     color=config.COLORS["success"]
                 ),
                 ephemeral=True
@@ -282,7 +282,7 @@ class Register(commands.Cog):
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Error",
-                    description=f"No se pudo eliminar el registro: {str(e)}",
+                    description=f"Registration could not be removed: {str(e)}",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True

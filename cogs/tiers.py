@@ -105,8 +105,8 @@ class TierButton(discord.ui.Button):
                         player_mention = player.mention if player else f"<@{self.discord_id}>"
                         await results_channel.send(
                             embed=discord.Embed(
-                                title="Tier Asignado",
-                                description=f"**Jugador:** {player_mention}\n"f"**Gamertag:** {self.gamertag}\n"f"**Modalidad:** {self.modalidad}\n"f"**Tier:** {self.tier}\n"f"**Puntos:** +{points}\n"f"**Tester:** <@{self.tester_id}>",
+                                title="Tier Assigned",
+                                description=f"**Player:** {player_mention}\n"f"**Gamertag:** {self.gamertag}\n"f"**Game mode:** {self.modalidad}\n"f"**Tier:** {self.tier}\n"f"**Points:** +{points}\n"f"**Tester:** <@{self.tester_id}>",
                                 color=config.COLORS["success"]
                             )
                         )
@@ -117,8 +117,8 @@ class TierButton(discord.ui.Button):
                 try:
                     await player.send(
                         embed=discord.Embed(
-                            title="Minecraft Bedrock - Tier Asignado",
-                            description=f"¡Tu prueba ha sido completada!\n\n"f"**Modalidad:** {self.modalidad}\n"f"**Tier:** {self.tier}\n"f"**Puntos Ganados:** +{points}",
+                            title="Minecraft Bedrock - Tier Assigned",
+                            description=f"Your test has been completed!\n\n"f"**Game mode:** {self.modalidad}\n"f"**Tier:** {self.tier}\n"f"**Points Earned:** +{points}",
                             color=config.COLORS["success"]
                         )
                     )
@@ -128,8 +128,8 @@ class TierButton(discord.ui.Button):
             player_mention = player.mention if player else f"<@{self.discord_id}>"
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="Tier Asignado",
-                    description=f"Se ha asignado {self.tier} a {player_mention}\n"f"Puntos: +{points}",
+                    title="Tier Assigned",
+                    description=f"{self.tier} has been assigned to {player_mention}\n"f"Points: +{points}",
                     color=config.COLORS["success"]
                 ),
                 ephemeral=True
@@ -155,26 +155,26 @@ class Tiers(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(name="tierset", description="Asigna un tier a un jugador")
+    @app_commands.command(name="tierset", description="Assign a tier to a player")
     @app_commands.describe(
-        member="El jugador a evaluar",
-        gamertag="Gamertag de Bedrock del jugador",
-        modalidad="Modalidad de prueba",
+        member="Player to evaluate",
+        gamertag="Player's Bedrock gamertag",
+        game_mode="Testing game mode",
     )
-    @app_commands.choices(modalidad=[
+    @app_commands.choices(game_mode=[
         app_commands.Choice(name=mod, value=mod) for mod in config.DEFAULT_MODALITIES
     ])
     async def tierset(self, interaction: discord.Interaction, member: discord.Member,
-                     gamertag: str, modalidad: app_commands.Choice[str]):
+                     gamertag: str, game_mode: app_commands.Choice[str]):
         """Assign tier to a player (tester only)."""
-        modalidad_value = modalidad.value
+        modalidad_value = game_mode.value
 
         config_data = database.get_server_config(interaction.guild_id)
         if not config_data or not config_data.get("tester_role_id"):
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="No Configurado",
-                    description="El servidor no está configurado. Usa `/setup`.",
+                    title="Not Configured",
+                    description="The server has not been configured. Use `/setup`.",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -186,8 +186,8 @@ class Tiers(commands.Cog):
                                not interaction.user.guild_permissions.administrator):
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="No Autorizado",
-                    description="Solo los testers pueden asignar tiers.",
+                    title="Not Authorized",
+                    description="Only testers can assign tiers.",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -196,8 +196,8 @@ class Tiers(commands.Cog):
 
         await interaction.response.send_message(
             embed=discord.Embed(
-                title="Selecciona un Tier",
-                description=f"**Jugador:** {member.mention}\n"f"**Gamertag:** {gamertag}\n"f"**Modalidad:** {modalidad_value}\n\n"f"Selecciona el tier asignado (HT = High Tier, LT = Low Tier):",
+                title="Select a Tier",
+                description=f"**Player:** {member.mention}\n"f"**Gamertag:** {gamertag}\n"f"**Game mode:** {modalidad_value}\n\n"f"Select the assigned tier (HT = High Tier, LT = Low Tier):",
                 color=config.COLORS["info"]
             ),
             view=TierSelectView(interaction.guild_id, member.id, gamertag, modalidad_value,
@@ -205,8 +205,8 @@ class Tiers(commands.Cog):
             ephemeral=True
         )
 
-    @app_commands.command(name="tiersinfo", description="Ver tiers de un jugador")
-    @app_commands.describe(member="El jugador a consultar")
+    @app_commands.command(name="tiersinfo", description="View a player's tiers")
+    @app_commands.describe(member="Player to look up")
     async def tiersinfo(self, interaction: discord.Interaction, member: discord.Member):
         """View player tier information."""
         tiers = database.get_player_all_tiers(interaction.guild_id, member.id)
@@ -214,8 +214,8 @@ class Tiers(commands.Cog):
         if not tiers:
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="ℹ Sin Tiers",
-                    description=f"{member.mention} aún no tiene tiers asignados.",
+                    title="ℹ No Tiers",
+                    description=f"{member.mention} does not have any assigned tiers yet.",
                     color=config.COLORS["info"]
                 ),
                 ephemeral=True
@@ -232,24 +232,24 @@ class Tiers(commands.Cog):
         for tier in tiers:
             embed.add_field(
                 name=tier["modalidad"],
-                value=f"**Tier:** {tier['tier']}\n**Puntos:** {tier.get('test_points', 0)}",
+                value=f"**Tier:** {tier['tier']}\n**Points:** {tier.get('test_points', 0)}",
                 inline=False
             )
             total_points += tier.get("test_points", 0)
 
-        embed.set_footer(text=f"Puntos Totales: {total_points}")
+        embed.set_footer(text=f"Total Points: {total_points}")
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @app_commands.command(name="toptest", description="Ranking de testers por puntos")
+    @app_commands.command(name="toptest", description="Tester ranking by points")
     @app_commands.describe(
-        modalidad="Filtrar por modalidad (opcional)" )
-    @app_commands.choices(modalidad=[
+        game_mode="Filter by game mode (optional)" )
+    @app_commands.choices(game_mode=[
         app_commands.Choice(name=mod, value=mod) for mod in config.DEFAULT_MODALITIES
     ])
-    async def toptest(self, interaction: discord.Interaction, modalidad: Optional[app_commands.Choice[str]] = None):
+    async def toptest(self, interaction: discord.Interaction, game_mode: Optional[app_commands.Choice[str]] = None):
         """Show leaderboard of top testers."""
-        modalidad_value = modalidad.value if modalidad else None
+        modalidad_value = game_mode.value if game_mode else None
 
         top_testers = database.get_top_testers(interaction.guild_id, modalidad_value, limit=10)
 
@@ -257,7 +257,7 @@ class Tiers(commands.Cog):
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Ranking",
-                    description="No hay datos disponibles aún.",
+                    description="No data is available yet.",
                     color=config.COLORS["info"]
                 ),
                 ephemeral=True
@@ -267,7 +267,7 @@ class Tiers(commands.Cog):
         title = f"Top Testers - {modalidad_value}"if modalidad_value else "Top Testers"
         embed = discord.Embed(
             title=title,
-            description="Minecraft Bedrock | Ranking por Puntos de Prueba",
+            description="Minecraft Bedrock | Ranking by Testing Points",
             color=config.COLORS["bedrock"]
         )
 
@@ -279,7 +279,7 @@ class Tiers(commands.Cog):
             except:
                 leaderboard += f"{i}. **Unknown** - {tester['tier']} ({tester.get('test_points', 0)} pts)\n"
         embed.add_field(
-            name="Jugadores",
+            name="Players",
             value=leaderboard,
             inline=False
         )

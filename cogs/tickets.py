@@ -9,19 +9,19 @@ from datetime import datetime
 class TicketCreateModal(discord.ui.Modal):
     """Modal for creating a ticket."""
     def __init__(self, category: str):
-        super().__init__(title=f"Crear Ticket - {category}", timeout=300)
+        super().__init__(title=f"Create Ticket - {category}", timeout=300)
         self.category = category
 
     subject = discord.ui.TextInput(
-        label="Asunto",
-        placeholder="Describe brevemente tu problema",
+        label="Subject",
+        placeholder="Briefly describe your issue",
         required=True,
         max_length=100
     )
 
     description = discord.ui.TextInput(
-        label="Descripción",
-        placeholder="Explica tu problema en detalle",
+        label="Description",
+        placeholder="Explain your issue in detail",
         style=discord.TextStyle.paragraph,
         required=True,
         max_length=1000
@@ -34,8 +34,8 @@ class TicketCreateModal(discord.ui.Modal):
         if not config_data:
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="No Configurado",
-                    description="El servidor no está configurado.",
+                    title="Not Configured",
+                    description="The server has not been configured.",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -93,11 +93,11 @@ class TicketCreateModal(discord.ui.Modal):
 
             embed = discord.Embed(
                 title=f"Ticket #{ticket_number:04d}",
-                description=f"**Categoría:** {self.category}\n"f"**Asunto:** {self.subject.value}\n\n"f"**Descripción:**\n{self.description.value}",
+                description=f"**Category:** {self.category}\n"f"**Subject:** {self.subject.value}\n\n"f"**Description:**\n{self.description.value}",
                 color=config.COLORS["info"],
                 timestamp=datetime.now()
             )
-            embed.set_footer(text=f"Creado por {interaction.user}")
+            embed.set_footer(text=f"Created by {interaction.user}")
 
             await ticket_channel.send(
                 content=interaction.user.mention,
@@ -111,8 +111,8 @@ class TicketCreateModal(discord.ui.Modal):
                     if logs_channel:
                         await logs_channel.send(
                             embed=discord.Embed(
-                                title="Nuevo Ticket",
-                                description=f"**Ticket:** #{ticket_number:04d}\n"f"**Usuario:** {interaction.user.mention}\n"f"**Categoría:** {self.category}\n"f"**Canal:** {ticket_channel.mention}",
+                                title="New Ticket",
+                                description=f"**Ticket:** #{ticket_number:04d}\n"f"**User:** {interaction.user.mention}\n"f"**Category:** {self.category}\n"f"**Channel:** {ticket_channel.mention}",
                                 color=config.COLORS["info"],
                                 timestamp=datetime.now()
                             )
@@ -122,8 +122,8 @@ class TicketCreateModal(discord.ui.Modal):
 
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="Ticket Creado",
-                    description=f"Tu ticket ha sido creado: {ticket_channel.mention}",
+                    title="Ticket Created",
+                    description=f"Your ticket has been created: {ticket_channel.mention}",
                     color=config.COLORS["success"]
                 ),
                 ephemeral=True
@@ -134,7 +134,7 @@ class TicketCreateModal(discord.ui.Modal):
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Error",
-                    description=f"No se pudo crear el ticket: {str(e)}",
+                    description=f"The ticket could not be created: {str(e)}",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -146,7 +146,7 @@ class TicketControlView(discord.ui.View):
         super().__init__(timeout=None)
 
     @discord.ui.button(
-        label="Cerrar Ticket",
+        label="Close Ticket",
         style=discord.ButtonStyle.danger,
         custom_id="ticket_close" )
     async def close_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -156,7 +156,7 @@ class TicketControlView(discord.ui.View):
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Error",
-                    description="No se encontró información del ticket.",
+                    description="No information was found for this ticket.",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -173,8 +173,8 @@ class TicketControlView(discord.ui.View):
         if not (is_creator or is_tester or is_admin):
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="No Autorizado",
-                    description="Solo el creador del ticket, testers o admins pueden cerrar.",
+                    title="Not Authorized",
+                    description="Only the ticket creator, testers, or administrators can close it.",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -189,8 +189,8 @@ class TicketControlView(discord.ui.View):
                 if logs_channel:
                     await logs_channel.send(
                         embed=discord.Embed(
-                            title="Ticket Cerrado",
-                            description=f"**Ticket:** #{ticket['ticket_number']:04d}\n"f"**Cerrado por:** {interaction.user.mention}\n"f"**Creado por:** <@{ticket['creator_id']}>",
+                            title="Ticket Closed",
+                            description=f"**Ticket:** #{ticket['ticket_number']:04d}\n"f"**Closed by:** {interaction.user.mention}\n"f"**Created by:** <@{ticket['creator_id']}>",
                             color=config.COLORS["warning"],
                             timestamp=datetime.now()
                         )
@@ -200,8 +200,8 @@ class TicketControlView(discord.ui.View):
 
         await interaction.response.send_message(
             embed=discord.Embed(
-                title="Ticket Cerrado",
-                description="Este ticket ha sido cerrado.\n**El canal se eliminará en 10 segundos.**",
+                title="Ticket Closed",
+                description="This ticket has been closed.\n**The channel will be deleted in 10 seconds.**",
                 color=config.COLORS["warning"]
             )
         )
@@ -217,7 +217,7 @@ class TicketControlView(discord.ui.View):
             print(f"Error deleting ticket channel: {e}")
 
     @discord.ui.button(
-        label="Añadir Usuario",
+        label="Add User",
         style=discord.ButtonStyle.secondary,
         custom_id="ticket_add_user" )
     async def add_user(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -227,11 +227,11 @@ class TicketControlView(discord.ui.View):
 class AddUserModal(discord.ui.Modal):
     """Modal to add user to ticket."""
     def __init__(self):
-        super().__init__(title="Añadir Usuario al Ticket", timeout=60)
+        super().__init__(title="Add User to Ticket", timeout=60)
 
     user_id = discord.ui.TextInput(
-        label="ID del Usuario",
-        placeholder="Ingresa el ID del usuario",
+        label="User ID",
+        placeholder="Enter the user's ID",
         required=True,
         max_length=20
     )
@@ -247,8 +247,8 @@ class AddUserModal(discord.ui.Modal):
                 except:
                     await interaction.response.send_message(
                         embed=discord.Embed(
-                            title="Usuario No Encontrado",
-                            description="No se encontró un usuario con ese ID en el servidor.",
+                            title="User Not Found",
+                            description="No user with that ID was found on the server.",
                             color=config.COLORS["error"]
                         ),
                         ephemeral=True
@@ -264,8 +264,8 @@ class AddUserModal(discord.ui.Modal):
 
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="Usuario Añadido",
-                    description=f"{member.mention} ha sido añadido al ticket.",
+                    title="User Added",
+                    description=f"{member.mention} has been added to the ticket.",
                     color=config.COLORS["success"]
                 )
             )
@@ -273,8 +273,8 @@ class AddUserModal(discord.ui.Modal):
         except ValueError:
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="ID Inválido",
-                    description="El ID debe ser un número.",
+                    title="Invalid ID",
+                    description="The ID must be a number.",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
@@ -286,32 +286,32 @@ class PersistentTicketView(discord.ui.View):
         super().__init__(timeout=None)
 
     @discord.ui.button(
-        label="Reporte de Tester",
+        label="Tester Report",
         style=discord.ButtonStyle.danger,
         custom_id="ticket_report_tester" )
     async def report_tester(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(TicketCreateModal("Reporte de Tester"))
+        await interaction.response.send_modal(TicketCreateModal("Tester Report"))
 
     @discord.ui.button(
-        label="Injusticia en Evaluación",
+        label="Evaluation Appeal",
         style=discord.ButtonStyle.primary,
         custom_id="ticket_unfair" )
     async def unfair_evaluation(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(TicketCreateModal("Injusticia en Evaluación"))
+        await interaction.response.send_modal(TicketCreateModal("Evaluation Appeal"))
 
     @discord.ui.button(
-        label="Error del Sistema",
+        label="System Error",
         style=discord.ButtonStyle.secondary,
         custom_id="ticket_system_error" )
     async def system_error(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(TicketCreateModal("Error del Sistema"))
+        await interaction.response.send_modal(TicketCreateModal("System Error"))
 
     @discord.ui.button(
-        label="Consulta General",
+        label="General Inquiry",
         style=discord.ButtonStyle.secondary,
         custom_id="ticket_general" )
     async def general_inquiry(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_modal(TicketCreateModal("Consulta General"))
+        await interaction.response.send_modal(TicketCreateModal("General Inquiry"))
 
 class Tickets(commands.Cog):
     """Ticket system commands."""
@@ -323,51 +323,51 @@ class Tickets(commands.Cog):
         self.bot.add_view(PersistentTicketView())
         self.bot.add_view(TicketControlView())
 
-    @app_commands.command(name="ticketspanel", description="Muestra el panel de tickets")
+    @app_commands.command(name="ticketspanel", description="Display the ticket panel")
     async def tickets_panel(self, interaction: discord.Interaction):
         """Show tickets panel."""
         embed = discord.Embed(
-            title="Sistema de Tickets",
-            description="**KoHs Tiers - Soporte**\n\n" "Selecciona una categoría para crear un ticket.\n" "Un miembro del staff te atenderá lo antes posible.",
+            title="Ticket System",
+            description="**KoHs Tiers - Support**\n\n" "Select a category to create a ticket.\n" "A staff member will assist you as soon as possible.",
             color=config.COLORS["bedrock"]
         )
 
         embed.add_field(
-            name="Reporte de Tester",
-            value="Reporta comportamiento inapropiado de un tester",
+            name="Tester Report",
+            value="Report inappropriate behavior by a tester",
             inline=False
         )
         embed.add_field(
-            name="Injusticia en Evaluación",
-            value="Si crees que tu tier asignado fue injusto",
+            name="Evaluation Appeal",
+            value="Use this if you believe your assigned tier was unfair",
             inline=False
         )
         embed.add_field(
-            name="Error del Sistema",
-            value="Reporta bugs o errores técnicos",
+            name="System Error",
+            value="Report bugs or technical errors",
             inline=False
         )
         embed.add_field(
-            name="Consulta General",
-            value="Cualquier otra pregunta o consulta",
+            name="General Inquiry",
+            value="Any other question or inquiry",
             inline=False
         )
 
-        embed.set_footer(text="Los tickets se crean en canales privados")
+        embed.set_footer(text="Tickets are created in private channels")
 
         await interaction.response.send_message(
             embed=embed,
             view=PersistentTicketView()
         )
 
-    @app_commands.command(name="ticket", description="Crear un ticket de soporte")
-    @app_commands.describe(categoria="Categoría del ticket")
-    @app_commands.choices(categoria=[
+    @app_commands.command(name="ticket", description="Create a support ticket")
+    @app_commands.describe(category="Ticket category")
+    @app_commands.choices(category=[
         app_commands.Choice(name=cat, value=cat) for cat in config.TICKET_CATEGORIES
     ])
-    async def ticket(self, interaction: discord.Interaction, categoria: app_commands.Choice[str]):
+    async def ticket(self, interaction: discord.Interaction, category: app_commands.Choice[str]):
         """Create a support ticket."""
-        await interaction.response.send_modal(TicketCreateModal(categoria.value))
+        await interaction.response.send_modal(TicketCreateModal(category.value))
 
 async def setup(bot: commands.Bot):
     """Load the cog."""

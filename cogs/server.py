@@ -16,7 +16,7 @@ class Server(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @app_commands.command(name="broadcast", description="Enviar mensaje a un canal (Owner)")
+    @app_commands.command(name="broadcast", description="Send a message to a channel (Owner)")
     @is_owner_check()
     async def broadcast(self, interaction: discord.Interaction, channel: discord.TextChannel,
                        message: str):
@@ -25,8 +25,8 @@ class Server(commands.Cog):
             await channel.send(message)
             await interaction.response.send_message(
                 embed=discord.Embed(
-                    title="Mensaje Enviado",
-                    description=f"Mensaje enviado a {channel.mention}",
+                    title="Message Sent",
+                    description=f"Message sent to {channel.mention}",
                     color=config.COLORS["success"]
                 ),
                 ephemeral=True
@@ -41,44 +41,44 @@ class Server(commands.Cog):
                 ephemeral=True
             )
 
-    @app_commands.command(name="closequeueforce", description="Forzar cierre de cola (Owner)")
+    @app_commands.command(name="closequeueforce", description="Force-close a queue (Owner)")
     @is_owner_check()
-    @app_commands.describe(modalidad="La modalidad a cerrar")
-    @app_commands.choices(modalidad=[
+    @app_commands.describe(game_mode="Game mode to close")
+    @app_commands.choices(game_mode=[
         app_commands.Choice(name=mod, value=mod) for mod in config.DEFAULT_MODALITIES
     ])
-    async def closequeueforce(self, interaction: discord.Interaction, modalidad: app_commands.Choice[str]):
+    async def closequeueforce(self, interaction: discord.Interaction, game_mode: app_commands.Choice[str]):
         """Force close queue for a modality."""
         queue_cog = self.bot.get_cog("Queue")
         if queue_cog:
-            queue_key = (interaction.guild_id, modalidad.value)
+            queue_key = (interaction.guild_id, game_mode.value)
             if queue_key in queue_cog.queues:
                 queue_cog.queues[queue_key] = []
 
         await interaction.response.send_message(
             embed=discord.Embed(
-                title="Cola Forzada a Cerrar",
-                description=f"La cola de **{modalidad.value}** ha sido vaciada.",
+                title="Queue Force-Closed",
+                description=f"The **{game_mode.value}** queue has been cleared.",
                 color=config.COLORS["success"]
             ),
             ephemeral=True
         )
 
-    @app_commands.command(name="stats", description="Ver estadísticas del servidor")
+    @app_commands.command(name="stats", description="View server statistics")
     async def stats(self, interaction: discord.Interaction):
         """View server statistics."""
         config_data = database.get_server_config(interaction.guild_id)
 
         embed = discord.Embed(
-            title="Estadísticas del Servidor",
+            title="Server Statistics",
             description="**KoHs Tiers - Minecraft Bedrock**",
             color=config.COLORS["info"]
         )
 
         if config_data:
             embed.add_field(
-                name="Estado",
-                value="Configurado",
+                name="Status",
+                value="Configured",
                 inline=True
             )
 
@@ -95,17 +95,17 @@ class Server(commands.Cog):
                 conn.close()
 
                 embed.add_field(
-                    name="Registros Totales",
+                    name="Total Registrations",
                     value=str(total_regs),
                     inline=True
                 )
                 embed.add_field(
-                    name="Tiers Asignados",
+                    name="Assigned Tiers",
                     value=str(total_tiers),
                     inline=True
                 )
                 embed.add_field(
-                    name="Pruebas Completadas",
+                    name="Completed Tests",
                     value=str(total_tests),
                     inline=True
                 )
@@ -122,70 +122,70 @@ class Server(commands.Cog):
                     total_in_queue += count
                     queue_status += f"• **{modality}:** {count}\n"
                 embed.add_field(
-                    name=f"En Cola ({total_in_queue} total)",
-                    value=queue_status if queue_status else "Sin datos",
+                    name=f"Queued ({total_in_queue} total)",
+                    value=queue_status if queue_status else "No data",
                     inline=False
                 )
 
             if config_data.get("results_channel_id"):
                 embed.add_field(
-                    name="Canal de Resultados",
+                    name="Results Channel",
                     value=f"<#{config_data['results_channel_id']}>",
                     inline=False
                 )
         else:
             embed.add_field(
-                name="Estado",
-                value="No Configurado - Usa `/setup`",
+                name="Status",
+                value="Not Configured - Use `/setup`",
                 inline=False
             )
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @app_commands.command(name="help", description="Ver comandos disponibles")
+    @app_commands.command(name="help", description="View available commands")
     async def help_command(self, interaction: discord.Interaction):
         """Show available commands."""
         embed = discord.Embed(
-            title="Comandos de KoHs Tiers",
+            title="KoHs Tiers Commands",
             description="**Minecraft Bedrock Testing System**",
             color=config.COLORS["bedrock"]
         )
 
         embed.add_field(
-            name="Jugadores",
-            value="• `/register` - Registrarse en una modalidad\n" "• `/myregistrations` - Ver tus registros\n" "• `/unregister` - Salir de una modalidad\n" "• `/tiersinfo` - Ver tiers de un jugador",
+            name="Players",
+            value="• `/register` - Register for a game mode\n" "• `/myregistrations` - View your registrations\n" "• `/unregister` - Leave a game mode\n" "• `/tiersinfo` - View a player's tiers",
             inline=False
         )
 
         embed.add_field(
-            name="Colas",
-            value="• `/activequeue` - Abrir una cola de pruebas\n" "• `/closequeue` - Salir como tester activo\n" "• `/testerspanel` - Panel de acciones de testers",
+            name="Queues",
+            value="• `/activequeue` - Open a testing queue\n" "• `/closequeue` - Deactivate your tester status\n" "• `/testerspanel` - Tester action panel",
             inline=False
         )
 
         embed.add_field(
             name="Testers",
-            value="• `/tierset` - Asignar un tier a un jugador\n" "• `/toptest` - Ver ranking de jugadores",
+            value="• `/tierset` - Assign a tier to a player\n" "• `/toptest` - View the player ranking",
             inline=False
         )
 
         embed.add_field(
             name="Tickets",
-            value="• `/ticket` - Crear un ticket de soporte\n" "• `/ticketspanel` - Mostrar panel de tickets",
+            value="• `/ticket` - Create a support ticket\n" "• `/ticketspanel` - Display the ticket panel",
             inline=False
         )
 
         embed.add_field(
             name="Admin",
-            value="• `/setup` - Configurar el servidor\n" "• `/refreshpanels` - Actualizar paneles\n" "• `/stats` - Ver estadísticas\n" "• `/registerpanel` - Mostrar panel de registro",
+            value="• `/setup` - Configure the server\n" "• `/refreshpanels` - Refresh panels\n" "• `/stats` - View statistics\n" "• `/registerpanel` - Display the registration panel",
             inline=False
         )
 
-        embed.set_footer(text="Usa los paneles en los canales designados para interactuar")
+        embed.set_footer(text="Use the panels in their designated channels to interact")
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
-    @app_commands.command(name="ping", description="Ver latencia del bot")
+    @app_commands.command(name="ping", description="View bot latency")
     async def ping(self, interaction: discord.Interaction):
         """Check bot latency."""
         latency = round(self.bot.latency * 1000)
@@ -193,40 +193,40 @@ class Server(commands.Cog):
         await interaction.response.send_message(
             embed=discord.Embed(
                 title="Pong!",
-                description=f"Latencia: **{latency}ms**",
+                description=f"Latency: **{latency}ms**",
                 color=config.COLORS["success"] if latency < 200 else config.COLORS["warning"]
             ),
             ephemeral=True
         )
 
-    @app_commands.command(name="clearqueueadmin", description="Vaciar una cola específica (Admin)")
+    @app_commands.command(name="clearqueueadmin", description="Clear a specific queue (Admin)")
     @app_commands.checks.has_permissions(administrator=True)
-    @app_commands.describe(modalidad="La modalidad a vaciar")
-    @app_commands.choices(modalidad=[
+    @app_commands.describe(game_mode="Game mode to clear")
+    @app_commands.choices(game_mode=[
         app_commands.Choice(name=mod, value=mod) for mod in config.DEFAULT_MODALITIES
     ])
-    async def clearqueue(self, interaction: discord.Interaction, modalidad: app_commands.Choice[str]):
+    async def clearqueue(self, interaction: discord.Interaction, game_mode: app_commands.Choice[str]):
         """Clear a specific queue."""
         queue_cog = self.bot.get_cog("Queue")
         if not queue_cog:
             await interaction.response.send_message(
                 embed=discord.Embed(
                     title="Error",
-                    description="El sistema de colas no está disponible.",
+                    description="The queue system is not available.",
                     color=config.COLORS["error"]
                 ),
                 ephemeral=True
             )
             return
 
-        queue_key = (interaction.guild_id, modalidad.value)
+        queue_key = (interaction.guild_id, game_mode.value)
         prev_count = len(queue_cog.queues.get(queue_key, []))
         queue_cog.queues[queue_key] = []
 
         await interaction.response.send_message(
             embed=discord.Embed(
-                title="Cola Vaciada",
-                description=f"La cola de **{modalidad.value}** ha sido vaciada.\n"f"Se removieron **{prev_count}** jugadores.",
+                title="Queue Cleared",
+                description=f"The **{game_mode.value}** queue has been cleared.\n"f"Removed **{prev_count}** players.",
                 color=config.COLORS["success"]
             ),
             ephemeral=True

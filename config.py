@@ -46,14 +46,14 @@ TEST_COOLDOWN_DAYS = 15
 
 MESSAGES = {
     "minecraft_bedrock": "Minecraft Bedrock",
-    "setup_title": "Configuración de KoHs Tiers",
-    "queue_title": "Cola de Pruebas",
-    "no_testers": "No hay testers activos en este momento.",
-    "test_started": "¡Tu prueba ha comenzado!",
-    "test_ended": "Prueba finalizada.",
-    "tier_assigned": "Se te ha asignado un tier.",
-    "insufficient_perms": "No tengo los permisos necesarios para esta acción.",
-    "not_configured": "Este servidor no está configurado. Usa `/setup` primero.",
+    "setup_title": "KoHs Tiers Setup",
+    "queue_title": "Testing Queue",
+    "no_testers": "There are no active testers at the moment.",
+    "test_started": "Your test has started!",
+    "test_ended": "Test completed.",
+    "tier_assigned": "You have been assigned a tier.",
+    "insufficient_perms": "I do not have the permissions required for this action.",
+    "not_configured": "This server has not been configured. Use `/setup` first.",
 }
 
 COLORS = {
@@ -65,10 +65,10 @@ COLORS = {
 }
 
 TICKET_CATEGORIES = [
-    "Reporte de Tester",
-    "Injusticia en Evaluación",
-    "Error del Sistema",
-    "Consulta General"
+    "Tester Report",
+    "Evaluation Appeal",
+    "System Error",
+    "General Inquiry"
 ]
 
 STATUS_ACTIVE = "active"

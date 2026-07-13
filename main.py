@@ -65,7 +65,7 @@ class KoHsBot(commands.Bot):
 async def main():
     """Main entry point."""
     if not config.DISCORD_TOKEN:
-        print("Error: DISCORD_TOKEN no está configurado en .env")
+        print("Error: DISCORD_TOKEN is not configured in .env")
         sys.exit(1)
 
     bot = KoHsBot()
@@ -73,40 +73,40 @@ async def main():
     @bot.event
     async def on_ready():
         """Bot is ready."""
-        print(f"Bot conectado como {bot.user}")
-        print(f"Servidores: {len(bot.guilds)}")
+        print(f"Bot connected as {bot.user}")
+        print(f"Servers: {len(bot.guilds)}")
 
         activity = discord.Activity(
             type=discord.ActivityType.watching,
-            name="Testeando | KoHs Tiers" )
+            name="Testing | KoHs Tiers" )
         await bot.change_presence(status=discord.Status.online, activity=activity)
-        print(f"Presence:  Testeando | KoHs Tiers")
+        print("Presence: Testing | KoHs Tiers")
 
     @bot.event
     async def on_guild_join(guild: discord.Guild):
         """Bot joined a new server."""
-        print(f"Nuevo servidor: {guild.name} ({guild.id})")
+        print(f"New server: {guild.name} ({guild.id})")
 
     @bot.event
     async def on_guild_remove(guild: discord.Guild):
         """Bot left a server."""
-        print(f"Servidor removido: {guild.name} ({guild.id})")
+        print(f"Server removed: {guild.name} ({guild.id})")
 
     @bot.event
     async def on_command_error(ctx, error):
         """Handle command errors."""
-        print(f"Error en comando: {error}")
+        print(f"Command error: {error}")
 
     @bot.event
     async def on_app_command_error(interaction: discord.Interaction, error: Exception):
         """Handle app command errors."""
-        print(f"Error en app command: {error}")
+        print(f"App command error: {error}")
         try:
             if not interaction.response.is_done():
                 await interaction.response.send_message(
                     embed=discord.Embed(
                         title="Error",
-                        description="Ocurrió un error al procesar el comando.",
+                        description="An error occurred while processing the command.",
                         color=config.COLORS["error"]
                     ),
                     ephemeral=True
@@ -116,10 +116,10 @@ async def main():
 
     async with bot:
         try:
-            print("\n Iniciando bot...")
+            print("\n Starting bot...")
             await bot.start(config.DISCORD_TOKEN)
         except Exception as e:
-            print(f"Error fatal al iniciar bot: {e}")
+            print(f"Fatal error while starting the bot: {e}")
             traceback.print_exc()
             sys.exit(1)
 
@@ -130,9 +130,9 @@ if __name__ == "__main__":
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n  Bot detenido por el usuario")
+        print("\n Bot stopped by the user")
         sys.exit(0)
     except Exception as e:
-        print(f"\n Error fatal: {e}")
+        print(f"\n Fatal error: {e}")
         traceback.print_exc()
         sys.exit(1)
