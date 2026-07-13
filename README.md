@@ -1,24 +1,24 @@
-﻿# KoHs Tiers Bot
+# KoHs Tiers Bot
 
-Bot de Discord para gestionar colas de pruebas, asignacion de tiers y tickets de soporte en comunidades de Minecraft Bedrock.
+A Discord bot for managing testing queues, tier assignments, and support tickets in Minecraft Bedrock communities.
 
-## Funcionalidades
+## Features
 
-- Registro de jugadores por modalidad.
-- Sistema de colas para sesiones de prueba.
-- Asignacion de tiers (HT1-HT5, LT1-LT5) con roles por modalidad.
-- Historial de pruebas y cooldown entre evaluaciones.
-- Sistema de tickets con canales privados.
-- Paneles persistentes para registro, colas, testers y tickets.
-- Ranking de jugadores por puntos acumulados.
+- Player registration by game mode.
+- Queue system for testing sessions.
+- Tier assignment (HT1-HT5, LT1-LT5) with roles for each game mode.
+- Test history and cooldowns between evaluations.
+- Ticket system with private channels.
+- Persistent panels for registration, queues, testers, and tickets.
+- Player rankings based on accumulated points.
 
-## Requisitos
+## Requirements
 
-- Python 3.11 o superior.
-- Dependencias de `requirements.txt`.
-- Token de bot de Discord.
+- Python 3.11 or later.
+- Dependencies listed in `requirements.txt`.
+- Discord bot token.
 
-Permisos recomendados del bot:
+Recommended bot permissions:
 
 - `Manage Roles`
 - `Manage Channels`
@@ -27,7 +27,7 @@ Permisos recomendados del bot:
 - `Read Message History`
 - `Embed Links`
 
-## Instalacion
+## Installation
 
 ```bash
 python -m venv venv
@@ -36,40 +36,40 @@ pip install -r requirements.txt
 copy .env.example .env
 ```
 
-Editar `.env`:
+Edit `.env`:
 
 ```env
-DISCORD_TOKEN=tu_token_aqui
+DISCORD_TOKEN=your_token_here
 ```
 
-## Ejecucion
+## Running
 
 ```bash
 python main.py
 ```
 
-## Configuracion Inicial
+## Initial Configuration
 
-1. Invitar el bot al servidor con permisos de administrador.
-2. Ejecutar `/setup`.
-3. Verificar canales, roles y paneles creados.
-4. Asignar testers.
+1. Invite the bot to the server with administrator permissions.
+2. Run `/setup`.
+3. Verify the channels, roles, and panels that were created.
+4. Assign testers.
 
-## Comandos Principales
+## Main Commands
 
-- `/setup`: configuracion del sistema.
-- `/activequeue`: muestra cola de una modalidad.
-- `/closequeue`: desactiva estado de tester.
-- `/tierset`: asigna tier a un jugador.
-- `/tiersinfo`: consulta tiers de un jugador.
-- `/toptest`: ranking por puntos.
-- `/stats`: estadisticas del servidor.
-- `/ticket`: crear ticket.
-- `/ticketspanel`: mostrar panel de tickets.
+- `/setup`: configures the system.
+- `/activequeue`: displays the queue for a game mode.
+- `/closequeue`: disables tester status.
+- `/tierset`: assigns a tier to a player.
+- `/tiersinfo`: displays a player's tiers.
+- `/toptest`: displays the points ranking.
+- `/stats`: displays server statistics.
+- `/ticket`: creates a ticket.
+- `/ticketspanel`: displays the ticket panel.
 
-## Sistema de Puntos
+## Points System
 
-| Tier | Puntos |
+| Tier | Points |
 |------|--------|
 | HT1  | 15     |
 | HT2  | 14     |
@@ -82,9 +82,9 @@ python main.py
 | LT4  | 7      |
 | LT5  | 6      |
 
-Los puntos se acumulan por jugador.
+Points accumulate for each player.
 
-## Estructura
+## Structure
 
 ```text
 .
@@ -104,12 +104,14 @@ Los puntos se acumulan por jugador.
     `-- bot.db
 ```
 
-## Base de Datos
+## Database
 
-SQLite (`data/bot.db`) con tablas para:
+SQLite (`data/bot.db`) with tables for:
 
-- configuracion por servidor
-- registros de jugadores
-- tiers y puntos
-- historial/cooldowns/sesiones de pruebas
-- tickets y configuracion de modalidades
+- per-server configuration
+- player registrations
+- tiers and points
+- test history, cooldowns, and sessions
+- tickets and game-mode configuration
+
+> **Language note:** Some in-mod text may remain in Spanish for the convenience of the three modders responsible for the project.
